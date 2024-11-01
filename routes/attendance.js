@@ -43,5 +43,3 @@ router.post('/up-attendance', verifyToken, async(req,res) => {
             res.json(attendance);
         });
 export default router;
-
-

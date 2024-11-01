@@ -1,7 +1,7 @@
 import express from "express"; 
 import bcrypt from "bcryptjs"; 
 import jwt from "jsonwebtoken"; 
-import cookieParser from "cookie-parser";
+//import cookieParser from "cookie-parser";
 import User from '../models/User.js';      
 const router = express.Router();  
 
@@ -59,12 +59,12 @@ router.post('/signin', async (req, res) => {
         );
 
         //token is set as http-only cookie
-        res.cookie('token',token,{
+        /*res.cookie('token',token,{
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: 600000,
             sameSite:"None"
-        })
+        })*/
 
         res.json({ message: 'Signin successful' });
     } catch (err) {
