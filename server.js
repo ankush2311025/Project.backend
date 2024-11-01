@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser"; 
 import authRoutes from "./routes/auth.js"; 
 import dotenv from "dotenv";
-//const attendenceRotes = require('../routes/attendence.js');
+import attendanceRotes from "./routes/attendance.js" 
 //const timetableRoutes = require('../routes/timetable.js');
 
 dotenv.config();
@@ -25,7 +25,7 @@ mongoose.connect(process.env.MONGODB_URI,)
 
 //Routes
 app.use('/api/auth',authRoutes);
-//app.use('/api/attendence',attendenceRotes);
+app.use('/api/attendance',attendanceRotes);
 //app.use('/api/timetable',timetableRoutes);
 //app.use('/app/profile', profileRotes)
 

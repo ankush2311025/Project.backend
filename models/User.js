@@ -17,6 +17,7 @@ role:{
 },
 name:{
     type:String,
+    required : true
     
 },
 profilePicture:{
