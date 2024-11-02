@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'; 
 
 const attendanceSchema = new mongoose.Schema({
     userId: {
@@ -22,6 +22,6 @@ const attendanceSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-const Attendance = mongoose.model('Attendance', attendanceSchema);
+const Attendance = mongoose.model('Attendance', attendanceSchema); 
 
 export default Attendance;
