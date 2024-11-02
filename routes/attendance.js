@@ -1,45 +1,52 @@
-import express from "express";
-import Attendance from "../models/Attendance.js";
-import jwt from "jsonwebtoken";
+import express from 'express';
+import Attendance from '../models/Attendance.js';
+import jwt from 'jsonwebtoken';
+
 const router = express.Router();
 
-const verifyToken = (req,res,next)=>{
+// Middleware to verify token and check if the user is admin
+const verifyToken = (req, res, next) => {
     const token = req.headers['authorization'];
-    if(!token) return res.sendstatus (403);
-    jwt.verify(token , process.env.JWT_SECRET,(err , decoded) => {
-        if(err) return res.sendStatus (403);
+    if (!token) return res.sendStatus(403);
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) return res.sendStatus(403);
         req.userId = decoded.id;
-        req.userRole= decoded.role;
+        req.userRole = decoded.role;
         next();
     });
-    
 };
-// protected route eg.
-router.get('/protected-route', verifyToken, (req, res) => {
-    res.send('This is a protected route.');
+
+// Route for admin to update attendance
+router.post('/update', verifyToken, async (req, res) => {
+    if (req.userRole !== 'admin') {
+        return res.status(403).json({ message: 'Only admin can update attendance' });
+    }
+
+    const { userId, date, status, remarks } = req.body;
+
+    try {
+        // Update or create attendance record
+        const attendance = await Attendance.findOneAndUpdate(
+            { userId, date },
+            { status, remarks },
+            { new: true, upsert: true }  // `upsert: true` creates a new record if it doesn't exist
+        );
+        
+        res.json(attendance);
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating attendance', error });
+    }
 });
 
+// Route to get a user's attendance (restricted to logged-in users)
+router.get('/user-attendance', verifyToken, async (req, res) => {
+    try {
+        const attendance = await Attendance.find({ userId: req.userId });
+        res.json(attendance);
+    } catch (error) {
+        res.status(500).json({ message: 'Error check attendance', error });
+    }
+});
 
-//Update attendance (Admin and user)
-router.post('/up-attendance', verifyToken, async(req,res) => {
-    if (req.userRole !== 'admin' && req.userId !== userId)
-        return res.sendStatus(403);
-
-    const {userId,date,status} =req.body;
-    const attendance = await Attendance.findOneAndupdate (
-        { userId , date},
-        {status},
-        {new : true,
-         upsert : true 
-        }
-    );
-    res.json(attendance); 
-    })
-
-    //Get attendance for a user 
-     router.get('/', verifyToken, async(req , res ) => {
-        const attendance = await Attendance.find({
-            userId: req.userId});
-            res.json(attendance);
-        });
 export default router;
