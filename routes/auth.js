@@ -1,12 +1,9 @@
 import express from "express"; 
 import bcrypt from "bcryptjs"; 
 import jwt from "jsonwebtoken"; 
-//import cookieParser from "cookie-parser";
-import User from '../models/User.js';      
-const router = express.Router();  
+import User from '../models/User.js'; 
 
-//initialize the cookie-parser
-router.use(cookieParser());
+const router = express.Router();  
 
 // Sign Up
 router.post('/signup', async (req, res) => {
@@ -52,26 +49,20 @@ router.post('/signin', async (req, res) => {
             return res.status(400).json({ error: 'Invalid Details' });
         }
 
+        if (!process.env.JWT_SECRET) {
+            return res.status(500).json({ error: 'Server error: Missing JWT secret' });
+        }
+
         const token = jwt.sign(
             { id: user._id, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: '600s' }
         );
 
-        //token is set as http-only cookie
-        /*res.cookie('token',token,{
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 600000,
-            sameSite:"None"
-        })*/
-
-        res.json({ message: 'Signin successful' });
+        res.json({ token });
     } catch (err) {
-        console.log(err);
-        res.status(500).json({
-            error: 'Signin failed'
-        });
+        console.error(err);
+        res.status(500).json({ error: 'Signin failed' });
     }
 });
 

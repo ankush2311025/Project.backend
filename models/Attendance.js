@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const attendanceSchema = new mongoose.Schema({
-    userId : {
+    userId : { 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
     },
