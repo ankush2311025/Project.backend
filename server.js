@@ -4,9 +4,8 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser"; 
 import authRoutes from "./routes/auth.js"; 
 import dotenv from "dotenv";
-import attendanceRotes from "./routes/attendance.js" ;
-import adminRoutes from './routes/admin.js';
-//const timetableRoutes = require('../routes/timetable.js');
+import attendanceRoutes from "./routes/attendance.js" ;
+//const timetableRoutes = require('../routes/timetable.js');  
 
 dotenv.config();
 
@@ -26,10 +25,9 @@ mongoose.connect(process.env.MONGODB_URI,)
 
 //Routes
 app.use('/api/auth',authRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/attendance',attendanceRotes);
+//app.use('/api/admin', adminRoutes);
+app.use('/api/attendance',attendanceRoutes);
 //app.use('/api/timetable',timetableRoutes);
-//app.use('/app/profile', profileRotes)
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)

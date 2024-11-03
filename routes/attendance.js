@@ -6,11 +6,11 @@ const router = express.Router();
 
 // Middleware to verify token and check if the user is admin
 const verifyToken = (req, res, next) => {
-    const token = req.headers['authorization'];
-    if (!token) return res.sendStatus(403);
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) return res.sendStatus(401).json({message: 'Not auhorized'});
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) return res.sendStatus(403);
+        if (err) return res.sendStatus(401).json({message: 'Not authorized'});
         req.userId = decoded.id;
         req.userRole = decoded.role;
         next();
@@ -20,7 +20,7 @@ const verifyToken = (req, res, next) => {
 // Route for admin to update attendance
 router.post('/update', verifyToken, async (req, res) => {
     if (req.userRole !== 'admin') {
-        return res.status(403).json({ message: 'Only admin can update attendance' });
+        return res.status(400).json({ message: 'Only admin can update attendance' });
     }
 
     const { userId, date, status, remarks } = req.body;

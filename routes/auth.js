@@ -1,7 +1,8 @@
 import express from "express"; 
 import bcrypt from "bcryptjs"; 
 import jwt from "jsonwebtoken"; 
-import User from '../models/User.js'; 
+import User from '../models/User.js';
+//import multer from "multer"; 
 
 const router = express.Router();  
 
@@ -29,7 +30,7 @@ router.post('/signup', async (req, res) => {
 
         // Respond with success
         res.status(201).json({
-            message: 'User created'
+            message: 'User created',
         });
     } catch (err) {
         console.error(err);
@@ -56,7 +57,7 @@ router.post('/signin', async (req, res) => {
         const token = jwt.sign(
             { id: user._id, role: user.role },
             process.env.JWT_SECRET,
-            { expiresIn: '600s' }
+            { expiresIn: '1d' }
         );
 
         res.json({ token });
@@ -64,6 +65,7 @@ router.post('/signin', async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Signin failed' });
     }
-});
+    });    
+
 
 export default router; 
