@@ -42,11 +42,29 @@ router.post('/update', verifyToken, async (req, res) => {
 // Route to get a user's attendance (restricted to logged-in users)
 router.get('/user-attendance', verifyToken, async (req, res) => {
     try {
-        const attendance = await Attendance.find({ userId: req.userId });
+        const attendance = await Attendance.find();
         res.json(attendance);
     } catch (error) {
         res.status(500).json({ message: 'Error check attendance', error });
     }
+
+    // Route to get a user's attendance percentage
+router.get('/attendance-percentage', verifyToken, async (req, res) => {
+    try {
+        const totalDays = await Attendance.countDocuments({ userId: req.userId });
+        const presentDays = await Attendance.countDocuments({ userId: req.userId, status: 'Present' });
+
+        if (totalDays === 0) {
+            return res.json({ percentage: 0, message: "No attendance records found" });
+        }
+
+        const attendancePercentage = (presentDays / totalDays) * 100;
+        res.json({ percentage: attendancePercentage.toFixed(2) });
+    } catch (error) {
+        res.status(500).json({ message: 'Error calculating attendance percentage', error });
+    }
+});
+
 });
 
 export default router;
