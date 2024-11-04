@@ -1,19 +1,19 @@
 import express from "express"; 
 import bcrypt from "bcryptjs"; 
 import jwt from "jsonwebtoken"; 
-import User from '../models/User.js';
+import User from '../models/User.js'; 
 //import multer from "multer"; 
 
 const router = express.Router();  
 
-//generate token function
+//generate token function 
 const generateAccessToken = (user) => {
     return jwt.sign(
         {id:user._id,
             role:user.role
         },
         process.env.JWT_SECRET,
-        {expiresIn: '15m'}
+        {expiresIn: '15m'} 
     );
 };
 
