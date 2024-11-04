@@ -20,6 +20,9 @@ name:{
     required : true
     
 },
+image:{
+    type:String
+}
 })
 
 const User = mongoose.model('User', userSchema);

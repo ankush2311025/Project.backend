@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import authRoutes from "./routes/auth.js"; 
 import dotenv from "dotenv";
 import attendanceRoutes from "./routes/attendance.js" ;
+import cookieParser from "cookie-parser";
 //const timetableRoutes = require('../routes/timetable.js');  
 
 dotenv.config();
@@ -16,6 +17,7 @@ app.use(cors());
 //Middleware
 app.use(bodyParser.json());
 app.use(cors());
+app.use(cookieParser());
 
 
 //Data base connection
@@ -25,7 +27,6 @@ mongoose.connect(process.env.MONGODB_URI,)
 
 //Routes
 app.use('/api/auth',authRoutes);
-//app.use('/api/admin', adminRoutes);
 app.use('/api/attendance',attendanceRoutes);
 //app.use('/api/timetable',timetableRoutes);
 

@@ -6,6 +6,25 @@ import User from '../models/User.js';
 
 const router = express.Router();  
 
+//generate token function
+const generateAccessToken = (user) => {
+    return jwt.sign(
+        {id:user._id,
+            role:user.role
+        },
+        process.env.JWT_SECRET,
+        {expiresIn: '15m'}
+    );
+};
+
+const generateRefreshToken = (user) => {
+    return jwt.sign(
+        {id: user._id},
+        process.env.JWT_SECRET,
+        {expiresIn: '1d'}
+    )
+}
+
 // Sign Up
 router.post('/signup', async (req, res) => {
     const { email, password, name } = req.body;
@@ -54,18 +73,57 @@ router.post('/signin', async (req, res) => {
             return res.status(500).json({ error: 'Server error: Missing JWT secret' });
         }
 
-        const token = jwt.sign(
-            { id: user._id, role: user.role },
-            process.env.JWT_SECRET,
-            { expiresIn: '1d' }
-        );
+        //generate tokens
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+//set access token 
+        res.cookie('token', accessToken,{
+            httpOnly:true,
+            secure: true,
+            maxAge:900000
+        });
+        // send refresh token as part of json 
+        res.json({
+            message:'Signing successful',
+            refreshToken: refreshToken
+        });
 
-        res.json({ token });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Signin failed' });
     }
     });    
+
+    // Endpoint to refresh access token
+    router.post('/token', async (req,res) => {
+        const { refreshToken} = req.body;
+
+        if(!refreshToken) {
+            return res.status(401).json({error: 'Refresh token required'});
+        }
+        try{
+            const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+            const user = await User.findById(decoded.id);
+
+            if(!user) {
+                return res.status(403).json({error: 'Invalid refresh token'});
+            }
+            //generate new access token
+            const newAccessToken = generateAccessToken(user);
+
+            // send new access token im the response
+            res.cookie('token', newAccessToken,{
+                httpOnly:true,
+                secure:true,
+                maxAge:900000
+            });
+
+            res.json({message:'Access token refreshed'});
+        }catch(err) {
+            console.error(err);
+            res.status(403).json({error: 'Invalid or expired refresh token'})
+        }
+    });
 
 
 export default router; 
