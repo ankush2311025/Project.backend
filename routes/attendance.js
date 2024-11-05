@@ -23,13 +23,13 @@ router.post('/update', verifyToken, async (req, res) => {
         return res.status(400).json({ message: 'Only admin can update attendance' });
     }
 
-    const { userId, date, status, remarks } = req.body;
+    const { userId, date, status, remarks,name } = req.body;
 
     try {
         // Update or create attendance record
         const attendance = await Attendance.findOneAndUpdate(
             { userId, date },
-            { status, remarks },
+            { status, remarks, name },
             { new: true, upsert: true }  // `upsert: true` creates a new record if it doesn't exist
         );
         
@@ -52,6 +52,7 @@ router.post('/mark',verifyToken, async (req,res) => {
         const attendance = await Attendance.findOneAndUpdate(
             { userId: req.userId, date},
             {status},
+            
             {new: true, upsert: true}
         );
         res.json({message: 'Attendance marked succefully', attendance});
