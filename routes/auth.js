@@ -86,6 +86,7 @@ router.post('/signin', async (req, res) => {
         res.json({
             message:'Signing successful',
             refreshToken: refreshToken,
+            accessToken: accessToken,
             user: {
                 id: user._id,
                 name: user.name,    
